@@ -10,7 +10,7 @@ Run Command:
 
 dotnet run 
 
-📱 Frontend (React Native with Expo)
+📱 Frontend (next .js)
 Setup:
 
 npm install
