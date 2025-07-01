@@ -1,18 +1,26 @@
 "use client";
-import React, { useState } from 'react';
-import { useRouter } from 'next/router'; // For navigation
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    // Redirect if already logged in
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn === 'true') {
+      router.push('/home');
+    }
+  }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await fetch(
-        `http://localhost:5169/api/User?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+        `http://localhost:3000/Auth/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
         {
           method: 'GET',
           headers: {
@@ -22,13 +30,16 @@ const Login = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Invalid email or password');
+        throw new Error('Invalid username or password');
       }
 
       const data = await response.json();
       console.log('Login successful:', data);
 
-      // Redirect to dashboard or home
+      // Save login state
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('username', username);
+
       router.push('/home');
     } catch (error) {
       console.error('Login error:', error.message);
@@ -63,16 +74,16 @@ const Login = () => {
         boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
       }}>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email" style={{
+          <label htmlFor="username" style={{
             display: 'block',
             marginBottom: '8px',
             fontWeight: '500',
             color: '#555',
-          }}>Email:</label>
+          }}>Username:</label>
           <input
-            type="email"
-            id="email"
-            value={email}
+            type="text"
+            id="username"
+            value={username}
             onChange={(e) => setEmail(e.target.value)}
             required
             style={{

@@ -18,16 +18,15 @@ const Register = () => {
       return;
     }
   
-    // Construct the user data
     const userData = {
       username,
       email,
-      passwordHash: password, // Password will be hashed on the backend
+      password, 
     };
   
     try {
       // Send POST request to the registration API
-      const response = await fetch('http://localhost:5169/api/User', {
+      const response = await fetch('http://localhost:3000/Auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

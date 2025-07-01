@@ -82,7 +82,7 @@ export function CartProvider({ children }) {
     const orderPayload = {
       userId: userId,
       items: cart.map(item => ({
-        itemName: item.name,
+        title: item.name,
         price: item.price,
         quantity: item.quantity,
         order: null,
@@ -93,7 +93,7 @@ export function CartProvider({ children }) {
     console.log("Sending order:", orderPayload);
 
     try {
-      const response = await fetch('http://localhost:5169/api/OrderItems', {
+      const response = await fetch('http://localhost:3000/api/Cart/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

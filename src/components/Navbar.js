@@ -2,17 +2,15 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 async function getCategories() {
   try {
     const res = await fetch('https://fakestoreapi.com/products/categories', {
       cache: 'no-store',
     });
-    if (!res.ok) {
-      throw new Error('Failed to fetch categories');
-    }
-    const categories = await res.json();
-    return categories;
+    if (!res.ok) throw new Error('Failed to fetch categories');
+    return await res.json();
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
@@ -22,6 +20,8 @@ async function getCategories() {
 export default function Navbar() {
   const [categories, setCategories] = useState([]);
   const [showCategories, setShowCategories] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     async function loadCategories() {
@@ -29,7 +29,15 @@ export default function Navbar() {
       setCategories(categories);
     }
     loadCategories();
+
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    setIsLoggedIn(false);
+    router.push('/login');
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -46,8 +54,9 @@ export default function Navbar() {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul className="navbar-nav">
+          <ul className="navbar-nav me-auto">
             <li className="nav-item">
               <Link className="nav-link" href="/store">Store</Link>
             </li>
@@ -84,6 +93,23 @@ export default function Navbar() {
             <li className="nav-item">
               <Link className="nav-link" href="/cart">Cart</Link>
             </li>
+          </ul>
+
+          <ul className="navbar-nav">
+            {isLoggedIn ? (
+              <li className="nav-item">
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </li>
+            ) : (
+              <li className="nav-item">
+                <Link className="nav-link" href="/login">Login</Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>
